@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_audio"
+        android:icon="@drawable/ic_audio"
+        android:title="@string/menu_item_audio" />
+
+    <item
+        android:id="@+id/item_favourite"
+        android:icon="@drawable/ic_favourite"
+        android:title="@string/menu_item_favourite" />
+
+    <item
+        android:id="@+id/item_clock"
+        android:icon="@drawable/ic_clock"
+        android:title="@string/menu_item_clock" />
+
+    <item
+        android:id="@+id/item_own"
+        android:icon="@drawable/ic_own"
+        android:title="@string/menu_item_own" />
+
+</menu>
