@@ -30,6 +30,10 @@ public class Item {
         this.active = active;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     public void setFavourite(boolean favourite) {
         this.favourite = favourite;
     }

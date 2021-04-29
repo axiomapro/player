@@ -1,9 +1,11 @@
 package com.example.player.mvp.view;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,11 +48,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BottomNavigationView bottomNavigation;
     private NavigationView navigationView;
     private CoordinatorLayout coordinator;
+    private Param param;
     private FragmentManager manager;
     private MenuItem itemAdd;
     public static MainActivity activity;
     public static final String LOG = "playerLog";
     public static String screen = Constant.SCREEN_AUDIO;
+    private String textAbout, textEmail, textShareLink, textRateLink, textOther, textBonus;
     public static int country = 1;
 
     @Override
@@ -73,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initClasses() {
         activity = MainActivity.this;
-        Param param = new Param(this);
+        param = new Param(this);
         country = param.getInt(Constant.PARAM_COUNTRY);
         presenter = new MainPresenter(this);
         manager = getSupportFragmentManager();
@@ -97,16 +101,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void parseConfig(String config) {
+        Log.d(MainActivity.LOG,"config: "+config);
         try {
             JSONObject json = new JSONObject(config);
             JSONObject jsonObject = json.getJSONObject("Config");
             boolean isClockTabVisible = jsonObject.getBoolean("is_clock_tab_visible");
             boolean isOwnTabVisible = jsonObject.getBoolean("is_own_tab_visible");
             boolean isChangeVisible = jsonObject.getBoolean("is_change_visible");
-            String textShareLink = jsonObject.getString("text_sharelink");
-            String textRateLink = jsonObject.getString("text_ratelink");
-            String textOther = jsonObject.getString("text_other");
-            String textBonus = jsonObject.getString("text_bonus");
+            textAbout = jsonObject.getString("text_about");
+            textEmail = jsonObject.getString("text_email");
+            textShareLink = jsonObject.getString("text_sharelink");
+            textRateLink = jsonObject.getString("text_ratelink");
+            textOther = jsonObject.getString("text_other");
+            textBonus = jsonObject.getString("text_bonus");
+
+            Log.d(MainActivity.LOG,"isClockVisible: "+isClockTabVisible+"; textEmail: "+textEmail);
 
             if (!isClockTabVisible) {
                 navigationView.getMenu().findItem(R.id.item_clock).setVisible(false);
@@ -123,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (textBonus.equals("")) navigationView.getMenu().findItem(R.id.item_bonus_apps).setVisible(false);
         } catch (JSONException e) {
             e.printStackTrace();
+            Log.d(LOG,"Ошибка в парсинге config.json");
         }
     }
 
@@ -147,16 +157,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             transition(title);
         }
         else if (title.equals("Change")) {
-
+            param.setInt(Constant.PARAM_COUNTRY,0);
+            startActivity(new Intent(this,CountryActivity.class));
+            finish();
         }
         else if (title.equals("About")) {
-
+            presenter.showAboutDialog(textAbout.equals("")?"This is default ABOUT text":textAbout,textEmail);
         }
         else if (title.equals("Share")) {
-
+            presenter.share("Поделиться приложением",textShareLink);
         }
-        else if (title.equals("Rate") || title.equals("Other apps") || title.equals("Bonus apps")) {
-
+        else if (title.equals("Rate")) {
+            presenter.browser(textRateLink.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
+        }
+        else if (title.equals("Other apps")) {
+            presenter.browser(textOther.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
+        }
+        else if (title.equals("Bonus apps")) {
+            presenter.browser(textBonus.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
         }
 
         drawerLayout.closeDrawer(GravityCompat.START);
@@ -246,10 +264,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onBackStackChanged() {
         int total = manager.getBackStackEntryCount();
         if (total > 0) {
+            itemAdd.setVisible(false);
             drawerToggle.setDrawerIndicatorEnabled(false);
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             bottomNavigation.setVisibility(View.GONE);
         } else {
+            if (screen.equals(Constant.SCREEN_OWN) || screen.equals(Constant.SCREEN_CLOCK)) itemAdd.setVisible(true);
             drawerToggle.setDrawerIndicatorEnabled(true);
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             bottomNavigation.setVisibility(View.VISIBLE);

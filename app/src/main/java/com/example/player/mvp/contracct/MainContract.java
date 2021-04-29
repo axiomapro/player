@@ -5,6 +5,7 @@ public interface MainContract {
     interface View {
         void initAudioFragment();
         void parseConfig(String json);
+        void showMessage(String message);
     }
 
     interface Presenter {
@@ -13,6 +14,9 @@ public interface MainContract {
         void parseConfig();
         void exportDatabase();
         void detach();
+        void browser(String url,String message);
+        void share(String title,String text);
+        void showAboutDialog(String message,String email);
     }
 
 }

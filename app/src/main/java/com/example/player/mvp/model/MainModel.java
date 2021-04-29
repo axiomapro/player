@@ -6,8 +6,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 
+import com.example.player.basic.ConfigJson;
+import com.example.player.basic.request.MyRequest;
 import com.example.player.mvp.view.MainActivity;
 import com.example.player.basic.Constant;
 import com.example.player.basic.DateTimeManager;
@@ -25,6 +28,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
@@ -67,7 +72,6 @@ public class MainModel extends Model {
                 if (backup.exists()) {
                     Log.d(MainActivity.LOG,"restoreDatabase: импортировано");
                     copyFile(backupFile,context.getDatabasePath("database.db").toString());
-                    if (!databaseHelper.isOpenDb()) databaseHelper.openDb();
                     Cursor cursor = getWithArgs(Constant.TABLE_COUNTRY,"updated","del = ? order by updated desc limit 1",new String[]{String.valueOf(param.getInt(Constant.PARAM_COUNTRY))});
                     if (cursor.moveToFirst()) param.setString(Constant.PARAM_UPDATED,cursor.getString(cursor.getColumnIndex("updated")));
                     cursor.close();
@@ -82,13 +86,39 @@ public class MainModel extends Model {
 
     public void sendRequest() {
         Log.d(MainActivity.LOG,"sendRequest");
-        Cursor cursor = getWithArgs(Constant.TABLE_COUNTRY,"updated","server = ?",new String[]{String.valueOf(MainActivity.country)});
+        Cursor cursor = getWithArgs(Constant.TABLE_COUNTRY,"link,updated","server = ?",new String[]{String.valueOf(MainActivity.country)});
         if (cursor.moveToFirst()) {
+            String link = cursor.getString(cursor.getColumnIndex("link"));
             String updated = cursor.getString(cursor.getColumnIndex("updated"));
             if (updated == null || checkDateTime.days(updated) == 0 || checkDateTime.days(updated) >= 3) {
-                if (internet.getStatus(context)) startJobService();
+                if (internet.getStatus(context)) {
+                    startJobService();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.parseConfig();
+                        }
+                    },5000);
+                }
                 else listener.parseConfig();
-            } else listener.parseConfig();
+            } else {
+                File config = new File(context.getExternalFilesDir(null)+"/"+link+".json");
+                if (!config.exists()) {
+                    ConfigJson configJson = new ConfigJson(context);
+                    configJson.download(new MyRequest.VolleyRequest() {
+                        @Override
+                        public void onSuccess(String response) {
+                            configJson.update(link,response);
+                            listener.parseConfig();
+                        }
+
+                        @Override
+                        public void onError(String message) {
+
+                        }
+                    });
+                } else listener.parseConfig();
+            }
         } else startJobService();
     }
 

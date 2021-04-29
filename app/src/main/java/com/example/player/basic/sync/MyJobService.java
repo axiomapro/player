@@ -3,9 +3,9 @@ package com.example.player.basic.sync;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.database.Cursor;
-import android.util.Base64;
 import android.util.Log;
 
+import com.example.player.basic.ConfigJson;
 import com.example.player.mvp.view.MainActivity;
 import com.example.player.basic.Constant;
 import com.example.player.basic.Param;
@@ -17,9 +17,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +32,7 @@ public class MyJobService extends JobService {
     private JobParameters jobParameters;
     private Model model;
     private CV cv;
+    private ConfigJson configJson;
     private Map<String,String> map;
     private String link = Constant.LINK_COUNTRY;
     private int last = 0;
@@ -48,6 +46,7 @@ public class MyJobService extends JobService {
         map = new HashMap<>();
         model = new Model(getApplicationContext());
         cv = new CV();
+        configJson = new ConfigJson(getApplicationContext());
         send();
         return true; // другой поток
     }
@@ -73,6 +72,7 @@ public class MyJobService extends JobService {
             @Override
             public void onError(String message) {
                 Log.d(MainActivity.LOG,"error: "+message);
+                MainActivity.activity.showMessage("Сервер недоступен");
                 jobFinished(jobParameters,false);
             }
         });
@@ -126,7 +126,20 @@ public class MyJobService extends JobService {
                 myRequest.sendRequest(link, map, new MyRequest.VolleyRequest() {
                     @Override
                     public void onSuccess(String response) {
-                        updateConfig(response);
+                        Cursor cursor = model.getWithArgs(Constant.TABLE_COUNTRY,"link","server = ?",new String[]{String.valueOf(MainActivity.country)});
+                        if (cursor.moveToFirst()) {
+                            configJson.download(new MyRequest.VolleyRequest() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    configJson.update(cursor.getString(cursor.getColumnIndex("link")),response);
+                                }
+
+                                @Override
+                                public void onError(String message) {
+                                    MainActivity.activity.showMessage("Сервер недоступен");
+                                }
+                            });
+                        }
                         jobFinished(jobParameters,false);
                     }
 
@@ -137,28 +150,6 @@ public class MyJobService extends JobService {
                 });
             } else send();
         }
-    }
-
-    private void updateConfig(String response) {
-        try {
-            String json = new JSONObject(response).getString("result");
-            byte[] result = Base64.decode(json,Base64.DEFAULT);
-            Cursor cursor = model.getWithArgs(Constant.TABLE_COUNTRY,"link","server = ?",new String[]{String.valueOf(MainActivity.country)});
-            if (cursor.moveToFirst()) {
-                Log.d(MainActivity.LOG,"config copied: "+cursor.getString(cursor.getColumnIndex("link")));
-                OutputStream output = new FileOutputStream(getApplicationContext().getExternalFilesDir(null)+"/"+cursor.getString(cursor.getColumnIndex("link"))+".json");
-                output.write(result,0,result.length);
-                output.flush();
-                output.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d(MainActivity.LOG, "Не удалось копировать");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(MainActivity.LOG,"Не удалось получить json: "+response);
-        }
-        if (MainActivity.activity != null) MainActivity.activity.initAudioFragment();
     }
 
     @Override

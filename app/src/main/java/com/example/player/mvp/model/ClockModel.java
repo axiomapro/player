@@ -9,7 +9,9 @@ import com.example.player.basic.sqlite.CV;
 import com.example.player.basic.sqlite.Model;
 import com.example.player.mvp.view.MainActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ClockModel extends Model {
@@ -26,8 +28,8 @@ public class ClockModel extends Model {
         cv = new CV();
     }
 
-    public void updateStatus() {
-        updateByWhere(Constant.TABLE_CLOCK,cv.status(0),"date <= current_date and status = 1");
+    public void updateStatus(String datetime) {
+        updateByWhere(Constant.TABLE_CLOCK,cv.status(0),"date <= '"+datetime+"' and status = 1");
     }
 
     public List<Item> getList() {

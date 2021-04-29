@@ -93,7 +93,7 @@ public class MaterialFragment extends Fragment implements MaterialContract.View 
     public void audio() {
         if (statusPlaying) {
             statusPlaying = false;
-            ivAudio.setImageResource(R.drawable.ic_play);
+            ivAudio.setImageResource(R.drawable.ic_play_white);
             rippleBackground.stopRippleAnimation();
             stopPlayer();
         } else {
@@ -107,7 +107,7 @@ public class MaterialFragment extends Fragment implements MaterialContract.View 
                     public void onCompletion(MediaPlayer mp) {
                         if (visualizer != null) visualizer.hide();
                         rippleBackground.stopRippleAnimation();
-                        ivAudio.setImageResource(R.drawable.ic_play);
+                        ivAudio.setImageResource(R.drawable.ic_play_white);
                         stopPlayer();
                     }
                 });
@@ -121,7 +121,7 @@ public class MaterialFragment extends Fragment implements MaterialContract.View 
 //                getActivity().startService(intent);
             }
 
-            ivAudio.setImageResource(R.drawable.ic_pause);
+            ivAudio.setImageResource(R.drawable.ic_stop_white);
             rippleBackground.startRippleAnimation();
             player.start();
         }

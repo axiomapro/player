@@ -2,9 +2,12 @@ package com.example.player.basic;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -146,6 +149,27 @@ public class Dialog {
         });
     }
 
+    public void about(String message,String email) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        View v = LayoutInflater.from(context).inflate(R.layout.dialog_about,null);
+        TextView tvMessage = v.findViewById(R.id.textViewMessage);
+        Button button = v.findViewById(R.id.button);
+        tvMessage.setText(message);
+        builder.setView(v);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        button.setOnClickListener(v1 -> {
+            dialog.dismiss();
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+            intent.putExtra(Intent.EXTRA_EMAIL, email);
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Написать разработчику");
+            context.startActivity(intent);
+        });
+    }
+
     public void delete(Delete listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Удалить запись")
@@ -157,7 +181,7 @@ public class Dialog {
                         dialog.dismiss();
                     }
                 })
-                .setNeutralButton("Отмена", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

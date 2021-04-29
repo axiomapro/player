@@ -52,6 +52,12 @@ public class DateTimeManager {
         return result;
     }
 
+    public String getDateTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        return formatter.format(date);
+    }
+
     public String restoreDateTime(String datetime) {
         String result = datetime;
         String[] side = datetime.split(" ");
@@ -65,6 +71,35 @@ public class DateTimeManager {
         String hour = addZero(cutTime[0]);
         String minute = addZero(cutTime[1]);
         result = year+"-"+month+"-"+day+" "+hour+":"+minute+":00";
+        return result;
+    }
+
+    public String getRuDate(String datetime) {
+        String result;
+        String[] date = datetime.split("([- :])");
+        String year = date[0];
+        String month = date[1];
+        String day = cutZero(date[2]);
+        String hour = cutZero(date[3]);
+        String minute = date[4];
+        Calendar calendar = Calendar.getInstance();
+        String nowYear = String.valueOf(calendar.get(Calendar.YEAR));
+        String[] nameOfMonths = {"янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"};
+
+        if (nowYear.equals(year)) { // нынешний год
+            if (hour.equals("")) result = day+" "+nameOfMonths[Integer.parseInt(month) - 1];
+            else result = day+" "+nameOfMonths[Integer.parseInt(month)-1]+", "+hour+":"+minute;
+        }
+        else result = day+" "+nameOfMonths[Integer.parseInt(month)-1]+" "+year;
+
+        return result;
+    }
+
+    private String cutZero(String hour) {
+        String result;
+        String[] cut = hour.split("(?!^)");
+        if (cut[0].equals("0")) result = cut[1];
+        else result = hour;
         return result;
     }
 

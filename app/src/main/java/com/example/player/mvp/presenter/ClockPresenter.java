@@ -19,25 +19,30 @@ public class ClockPresenter implements ClockContract.Presenter {
     private ClockContract.View view;
     private final ClockModel model;
     private final Dialog dialog;
-    private final DateTimeManager checkDateTime;
+    private final DateTimeManager dateTimeManager;
     private final Alarm alarm;
 
     public ClockPresenter(ClockContract.View view) {
         this.view = view;
         this.model = new ClockModel(((ClockFragment) view).getContext());
         this.dialog = new Dialog(((ClockFragment) view).getContext());
-        this.checkDateTime = new DateTimeManager();
+        this.dateTimeManager = new DateTimeManager();
         this.alarm = new Alarm(((ClockFragment) view).getContext());
     }
 
     @Override
     public List<Item> getList() {
-        return model.getList();
+        List<Item> list = model.getList();
+        for (int i = 0; i < list.size(); i++) {
+            String date = list.get(i).getDate();
+            list.get(i).setDate(dateTimeManager.getRuDate(date));
+        }
+        return list;
     }
 
     @Override
     public void updateStatusClock() {
-        model.updateStatus();
+        model.updateStatus(dateTimeManager.getDateTime());
     }
 
     @Override
@@ -60,16 +65,16 @@ public class ClockPresenter implements ClockContract.Presenter {
                 if (TextUtils.isEmpty(name)) view.showMessage("Напишите название");
                 else if (media == 0) view.showMessage("Выберите трек");
                 else if (date == null) view.showMessage("Выберите дату");
-                else if (checkDateTime.days(date) > 0) view.showMessage("Дата уже прошла");
+                else if (dateTimeManager.days(date) > 0) view.showMessage("Дата уже прошла");
                 else if (time == null) view.showMessage("Укажите время");
-                else if (checkDateTime.days(date) <= 0) {
-                    if (checkDateTime.time(time) || checkDateTime.days(date) < 0) {
-                        String datetime = checkDateTime.restoreDateTime(date+" "+time);
+                else if (dateTimeManager.days(date) <= 0) {
+                    if (dateTimeManager.time(time) || dateTimeManager.days(date) < 0) {
+                        String datetime = dateTimeManager.restoreDateTime(date+" "+time);
                         model.add(name, media, datetime, new ClockModel.Model() {
                             @Override
                             public void onSuccess(int id) {
                                 dialog.dismiss();
-                                view.addItem(new Item(id,name,datetime,true));
+                                view.addItem(new Item(id,name,dateTimeManager.getRuDate(datetime),true));
                                 alarm.set(alarm.parseDateTime(datetime),id);
                             }
 
