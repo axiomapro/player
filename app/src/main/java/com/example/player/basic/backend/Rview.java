@@ -1,11 +1,8 @@
 package com.example.player.basic.backend;
 
-import android.view.View;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.player.R;
 import com.example.player.basic.list.Item;
 import com.example.player.basic.list.RecyclerViewAdapter;
 
@@ -21,16 +18,23 @@ public class Rview {
         this.list = list;
     }
 
-    public void init(String screen,View v, RecyclerViewAdapter.RecyclerViewItem listener) {
-        recyclerView = v.findViewById(R.id.recyclerView);
+    public void setRecyclerView(RecyclerView recyclerView) {
+        this.recyclerView = recyclerView;
+    }
+
+    public void init(String screen,RecyclerViewAdapter.RecyclerViewItem listener) {
         adapter = new RecyclerViewAdapter(screen,list);
         adapter.setClickListener(listener);
-        recyclerView.setLayoutManager(new LinearLayoutManager(v.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
     }
 
     public void clear() {
         list.clear();
+        adapter.notifyDataSetChanged();
+    }
+
+    public void update() {
         adapter.notifyDataSetChanged();
     }
 
@@ -54,6 +58,14 @@ public class Rview {
         list.remove(position);
         adapter.notifyItemRemoved(position);
         adapter.notifyItemRangeRemoved(position,list.size());
+    }
+
+    public void removeMenuItems(boolean removeByGroup,String name,int group) {
+        for (int i = 0; i < list.size(); i++) {
+            if (removeByGroup && list.get(i).getGroup() == group) list.remove(i);
+            if (!removeByGroup && list.get(i).equals(name)) list.remove(i);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     public Item getItem(int position) {

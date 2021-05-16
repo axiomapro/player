@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.player.R;
 import com.example.player.basic.backend.Constant;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.list.Item;
 import com.example.player.basic.list.RecyclerViewAdapter;
 import com.example.player.mvp.main.MainActivity;
@@ -36,14 +37,14 @@ public class CountryActivity extends AppCompatActivity implements CountryContrac
         setSupportActionBar(findViewById(R.id.toolbar));
         getSupportActionBar().setTitle("Выбор страны");
         coordinator = findViewById(R.id.coordinator);
-        MainActivity.screen = Constant.SCREEN_COUNTRY;
+        Constant.screen = Config.screen().country();
         presenter = new CountryPresenter(this);
     }
 
     @Override
     public void initRecyclerView(List<Item> list) {
         recyclerView = findViewById(R.id.recyclerView);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Constant.SCREEN_COUNTRY,list);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Config.screen().country(),list);
         adapter.setClickListener(new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {

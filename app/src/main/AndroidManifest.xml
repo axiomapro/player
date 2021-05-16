@@ -62,8 +62,7 @@
         <receiver
             android:name=".basic.receiver.AlertReceiver"
             android:enabled="true"
-            android:exported="false"
-            android:process=":remote">
+            android:exported="false">
             <intent-filter>
                 <action android:name="restart.service"/>
             </intent-filter>

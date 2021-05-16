@@ -4,6 +4,7 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.util.Log;
 
+import com.example.player.basic.config.Config;
 import com.example.player.basic.sync.MyTask;
 import com.example.player.mvp.main.MainActivity;
 import com.example.player.basic.backend.Constant;
@@ -22,11 +23,11 @@ public class MyCountryJobService extends JobService {
     private JobParameters jobParameters;
     private Param param;
     private Map<String, String> map;
-    private final String link = Constant.LINK_COUNTRY;
+    private final String link = Config.link().country();
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.d(MainActivity.LOG, "Job started");
+        Log.d(Config.log().basic(), "Job started");
         jobParameters = params;
         myRequest = new MyRequest(getApplicationContext());
         map = new HashMap<>();
@@ -37,7 +38,7 @@ public class MyCountryJobService extends JobService {
 
     private void send() {
         map.clear();
-        String updated = param.getString(Constant.PARAM_UPDATED);
+        String updated = param.getString(Config.param().updated());
         map.put("updated", updated == null ? "" : updated);
         myRequest.sendRequest(link, map, new MyRequest.VolleyRequest() {
             @Override
@@ -47,14 +48,14 @@ public class MyCountryJobService extends JobService {
 
             @Override
             public void onError(String message) {
-                Log.d(MainActivity.LOG, "error: " + message);
+                Log.d(Config.log().basic(), "error: " + message);
                 jobFinished(jobParameters, false);
             }
         });
     }
 
     private void success(String response) {
-        Log.d(MainActivity.LOG, link + " response: " + response);
+        Log.d(Config.log().basic(), link + " response: " + response);
         try {
             JSONObject jsonObject = new JSONObject(response);
             boolean status = jsonObject.getBoolean("status");
@@ -73,7 +74,7 @@ public class MyCountryJobService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
-        Log.d(MainActivity.LOG, "Job stopped");
+        Log.d(Config.log().basic(), "Job stopped");
         return true; // если прервутся условия, то пробуем по новому
     }
 }

@@ -1,6 +1,5 @@
 package com.example.player.mvp.clock;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,24 +11,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.player.R;
-import com.example.player.basic.backend.Constant;
 import com.example.player.basic.backend.Rview;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.list.Item;
 import com.example.player.basic.list.RecyclerViewAdapter;
 
 public class ClockFragment extends Fragment implements ClockContract.View {
 
-    /*
-        - native ad
-    */
-
-    private useActivity listener;
     private ClockContract.Presenter presenter;
     private Rview rView;
-
-    public interface useActivity {
-        void showMessage(String message,String from);
-    }
 
     public static ClockFragment newInstance(boolean clickMenu) {
         ClockFragment fragment = new ClockFragment();
@@ -48,7 +38,8 @@ public class ClockFragment extends Fragment implements ClockContract.View {
         presenter.updateStatusClock();
         rView = new Rview();
         rView.setList(presenter.getList());
-        rView.init(Constant.SCREEN_CLOCK,v, new RecyclerViewAdapter.RecyclerViewItem() {
+        rView.setRecyclerView(v.findViewById(R.id.recyclerView));
+        rView.init(Config.recyclerView().clock(), new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {
 
@@ -75,7 +66,6 @@ public class ClockFragment extends Fragment implements ClockContract.View {
     @Override
     public void showMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        // listener.showMessage(message);
     }
 
     @Override
@@ -89,15 +79,8 @@ public class ClockFragment extends Fragment implements ClockContract.View {
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof useActivity) listener = (useActivity) context;
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
-        listener = null;
         presenter.detach();
     }
 }

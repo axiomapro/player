@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.example.player.basic.config.Config;
 import com.example.player.mvp.main.MainActivity;
 import com.example.player.basic.backend.Constant;
 import com.example.player.basic.backend.Param;
@@ -19,13 +20,12 @@ import java.util.List;
 
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
-public class CountryModel {
+public class CountryModel extends Model {
 
     private final Context context;
-    private final Model model;
 
     public CountryModel(Context context) {
-        this.model = new Model(context);
+        super(context);
         this.context = context;
     }
 
@@ -39,14 +39,14 @@ public class CountryModel {
                     .build();
             JobScheduler scheduler = (JobScheduler) context.getSystemService(JOB_SCHEDULER_SERVICE);
             int resultCode = scheduler.schedule(jobInfo);
-            if (resultCode == JobScheduler.RESULT_SUCCESS) Log.d(MainActivity.LOG, "checkSchedule: запланировано");
-            else Log.d(MainActivity.LOG, "checkSchedule: не удалось запланировать");
-        } else Log.d(MainActivity.LOG, "checkSchedule: было запланировано ранее");
+            if (resultCode == JobScheduler.RESULT_SUCCESS) Log.d(Config.log().basic(), "checkSchedule: запланировано");
+            else Log.d(Config.log().basic(), "JobScheduler: не удалось запланировать");
+        } else Log.d(Config.log().basic(), "JobScheduler: было запланировано ранее");
     }
 
     public List<Item> getList() {
         List<Item> list = new ArrayList<>();
-        Cursor cursor = model.getWithArgs(Constant.TABLE_COUNTRY,"server,name,img","del = ?",new String[]{String.valueOf(0)});
+        Cursor cursor = getWithArgs(table,"server,name,img","del = ?",new String[]{String.valueOf(0)});
         while (cursor.moveToNext()) {
             list.add(new Item(cursor.getInt(cursor.getColumnIndex("server")),cursor.getString(cursor.getColumnIndex("name")),cursor.getString(cursor.getColumnIndex("img"))));
         }
@@ -55,7 +55,7 @@ public class CountryModel {
 
     public void saveCountry(Context context, int id) {
         Param param = new Param(context);
-        param.setInt(Constant.PARAM_COUNTRY, id);
+        param.setInt(Config.param().country(), id);
     }
 
 }

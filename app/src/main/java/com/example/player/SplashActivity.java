@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.player.basic.backend.Constant;
 import com.example.player.basic.backend.Param;
+import com.example.player.basic.config.Config;
 import com.example.player.mvp.country.CountryActivity;
 import com.example.player.mvp.main.MainActivity;
 
@@ -24,7 +25,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Intent intent;
-                if (param.getInt(Constant.PARAM_COUNTRY) == 0) {
+                if (param.getInt(Config.param().country()) == 0) {
                     intent = new Intent(getApplicationContext(), CountryActivity.class);
                     startActivity(intent);
                 }

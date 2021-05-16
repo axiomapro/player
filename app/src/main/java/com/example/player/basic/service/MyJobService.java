@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.example.player.basic.backend.ConfigJson;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.sync.MyTask;
 import com.example.player.mvp.main.MainActivity;
 import com.example.player.basic.backend.Constant;
@@ -35,12 +36,12 @@ public class MyJobService extends JobService {
     private CV cv;
     private ConfigJson configJson;
     private Map<String,String> map;
-    private String link = Constant.LINK_COUNTRY;
+    private String link = Config.link().country();
     private int last = 0;
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.d(MainActivity.LOG,"Job started");
+        Log.d(Config.log().basic(),"Job started");
         jobParameters = params;
         myRequest = new MyRequest(getApplicationContext());
         param = new Param(getApplicationContext());
@@ -56,12 +57,12 @@ public class MyJobService extends JobService {
         map.clear();
         // last-update: country, category / date from country table
         String updated = null;
-        if (link.equals(Constant.LINK_COUNTRY) || link.equals(Constant.LINK_CATEGORY)) updated = param.getString(Constant.PARAM_UPDATED);
+        if (link.equals(Config.link().country()) || link.equals(Config.link().category())) updated = param.getString(Config.param().updated());
         else {
-            Cursor cursor = model.getWithArgs(Constant.TABLE_COUNTRY,"updated","server = ? and del = ?",new String[]{String.valueOf(param.getInt(Constant.PARAM_COUNTRY)), String.valueOf(0)});
+            Cursor cursor = model.getWithArgs(Config.table().country(),"updated","server = ? and del = ?",new String[]{String.valueOf(param.getInt(Config.param().country())), String.valueOf(0)});
             if (cursor.moveToFirst()) updated = cursor.getString(cursor.getColumnIndex("updated"));
         }
-        map.put("country", String.valueOf(MainActivity.country));
+        map.put("country", String.valueOf(Constant.country));
         map.put("updated", updated == null?"":updated);
         map.put("last", String.valueOf(last));
         myRequest.sendRequest(link, map, new MyRequest.VolleyRequest() {
@@ -72,7 +73,7 @@ public class MyJobService extends JobService {
 
             @Override
             public void onError(String message) {
-                Log.d(MainActivity.LOG,"error: "+message);
+                Log.d(Config.log().basic(),"error: "+message);
                 if (MainActivity.activity != null) MainActivity.activity.showMessage("Сервер недоступен","jobService");
                 jobFinished(jobParameters,false);
             }
@@ -80,7 +81,7 @@ public class MyJobService extends JobService {
     }
 
     private void success(String response) {
-        Log.d(MainActivity.LOG,link+" response: "+response);
+        Log.d(Config.log().basic(),link+" response: "+response);
         try {
             JSONObject jsonObject = new JSONObject(response);
             boolean status = jsonObject.getBoolean("status");
@@ -98,7 +99,7 @@ public class MyJobService extends JobService {
             else {
                 String message = jsonObject.getString("message");
                 if (message.equals("result is empty")) {
-                    changeLink(link.equals(Constant.LINK_MEDIA)?jsonObject.getString(Constant.PARAM_UPDATED):null,link.equals(Constant.LINK_MEDIA));
+                    changeLink(link.equals(Config.link().media())?jsonObject.getString(Config.param().updated()):null,link.equals(Config.link().media()));
                 }
                 else jobFinished(jobParameters,false);
             }
@@ -108,26 +109,26 @@ public class MyJobService extends JobService {
     }
 
     private void changeLink(String updated, boolean finalMedia) {
-        Log.d(MainActivity.LOG,"changeLink: "+link);
-        if (link.equals(Constant.LINK_COUNTRY)) {
+        Log.d(Config.log().basic(),"changeLink: "+link);
+        if (link.equals(Config.link().country())) {
             last = 0;
-            link = Constant.LINK_CATEGORY;
+            link = Config.link().category();
             send();
         }
-        else if (link.equals(Constant.LINK_CATEGORY)) {
+        else if (link.equals(Config.link().category())) {
             last = 0;
-            link = Constant.LINK_MEDIA;
+            link = Config.link().media();
             send();
         }
-        else if (link.equals(Constant.LINK_MEDIA)) {
+        else if (link.equals(Config.link().media())) {
             if (finalMedia) {
-                param.setString(Constant.PARAM_UPDATED,updated);
-                model.updateByServer(Constant.TABLE_COUNTRY,cv.country(updated),param.getInt(Constant.PARAM_COUNTRY));
-                link = Constant.LINK_CONFIG;
+                param.setString(Config.param().updated(),updated);
+                model.updateByServer(Config.table().country(),cv.country(updated),param.getInt(Config.param().country()));
+                link = Config.link().config();
                 myRequest.sendRequest(link, map, new MyRequest.VolleyRequest() {
                     @Override
                     public void onSuccess(String response) {
-                        Cursor cursor = model.getWithArgs(Constant.TABLE_COUNTRY,"link","server = ?",new String[]{String.valueOf(MainActivity.country)});
+                        Cursor cursor = model.getWithArgs(Config.table().country(),"link","server = ?",new String[]{String.valueOf(Constant.country)});
                         if (cursor.moveToFirst()) {
                             configJson.download(new MyRequest.VolleyRequest() {
                                 @Override
@@ -155,7 +156,7 @@ public class MyJobService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
-        Log.d(MainActivity.LOG, "Job stopped");
+        Log.d(Config.log().basic(), "Job stopped");
         return true; // если прервутся условия, то пробуем по новому
     }
 

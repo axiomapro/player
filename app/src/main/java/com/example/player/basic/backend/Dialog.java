@@ -204,10 +204,10 @@ public class Dialog {
         });
     }
 
-    public void delete(Delete listener) {
+    public void delete(String title,String message,Delete listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Удалить запись")
-                .setMessage("Вы уверены что хотите удалить запись")
+        builder.setTitle(title)
+                .setMessage(message)
                 .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

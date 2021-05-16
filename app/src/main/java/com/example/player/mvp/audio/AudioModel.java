@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.example.player.basic.backend.Constant;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.list.Item;
 import com.example.player.basic.sqlite.CV;
 import com.example.player.basic.sqlite.Model;
@@ -27,7 +28,7 @@ public class AudioModel extends Model {
         List<Item> list = new ArrayList<>();
         String sorting = "";
         if (cat > 0) sorting = "and cat = "+cat;
-        Cursor cursor = getWithArgs(Constant.TABLE_MEDIA, "id,type,name,description,url,favourite", "country = ? and type = 1 "+sorting+" and del = 0", new String[]{String.valueOf(MainActivity.country)});
+        Cursor cursor = getWithArgs(table, "id,type,name,description,url,favourite", "country = ? and type = 1 "+sorting+" and del = 0", new String[]{String.valueOf(Constant.country)});
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             int type = cursor.getInt(cursor.getColumnIndex("type"));
@@ -43,7 +44,7 @@ public class AudioModel extends Model {
 
     public boolean toggleFavourite(int id) {
         boolean status = false;
-        Cursor cursor = getWithArgs(Constant.TABLE_MEDIA, "favourite", "id = ? and del = 0", new String[]{String.valueOf(id)});
+        Cursor cursor = getWithArgs(table, "favourite", "id = ? and del = 0", new String[]{String.valueOf(id)});
         if (cursor.moveToFirst()) {
             String favourite = cursor.getString(cursor.getColumnIndex("favourite"));
             if (favourite != null) favourite = null;
@@ -54,7 +55,7 @@ public class AudioModel extends Model {
                 favourite = formatter.format(date);
             }
 
-            updateById(Constant.TABLE_MEDIA, cv.favourite(favourite), id);
+            updateById(table, cv.favourite(favourite), id);
         }
         cursor.close();
         return status;

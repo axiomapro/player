@@ -30,7 +30,7 @@ public class OwnModel extends Model {
 
     public List<Item> getList() {
         List<Item> list = new ArrayList<>();
-        Cursor cursor = getWithArgs(Constant.TABLE_MEDIA,"id,type,name,description,url,favourite","country = ? and uid = 1 and type = 1 and del = 0 order by date desc",new String[]{String.valueOf(MainActivity.country)});
+        Cursor cursor = getWithArgs(table,"id,type,name,description,url,favourite","country = ? and uid = 1 and type = 1 and del = 0 order by date desc",new String[]{String.valueOf(Constant.country)});
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             int type = cursor.getInt(cursor.getColumnIndex("type"));
@@ -45,36 +45,31 @@ public class OwnModel extends Model {
     }
 
     public void delete(int id) {
-        updateById(Constant.TABLE_MEDIA,cv.delete(),id);
+        updateById(table,cv.delete(),id);
     }
 
     public boolean toggleFavourite(int id) {
         boolean status = false;
-        Cursor cursor = getWithArgs(Constant.TABLE_MEDIA,"favourite","id = ? and del = 0",new String[]{String.valueOf(id)});
+        Cursor cursor = getWithArgs(table,"favourite","id = ? and del = 0",new String[]{String.valueOf(id)});
         if (cursor.moveToFirst()) {
             String favourite = cursor.getString(cursor.getColumnIndex("favourite"));
             if (favourite != null) favourite = null;
             else {
                 status = true;
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date date = new Date();
-                favourite = formatter.format(date);
+                favourite = parameter.getDatetime();
             }
 
-            updateById(Constant.TABLE_MEDIA,cv.favourite(favourite),id);
+            updateById(table,cv.favourite(favourite),id);
         }
         cursor.close();
         return status;
     }
 
     public void add(String name, String url,Model listener) {
-        if (duplicate(Constant.TABLE_MEDIA,"url = ?",new String[]{url},true)) {
+        if (duplicate(table,"url = ?",new String[]{url},true)) {
             listener.onDuplicate();
         } else {
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date date = new Date();
-            String datetime = formatter.format(date);
-            int id = insertAndReplace(Constant.TABLE_MEDIA,cv.addMedia(0,1,MainActivity.country,1,0,name,null,url,datetime,0));
+            int id = insertAndReplace(table,cv.addMedia(0,1,Constant.country,1,0,name,null,url,parameter.getDatetime(),0));
             listener.onSuccess(id);
         }
     }

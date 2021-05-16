@@ -14,6 +14,7 @@ import com.example.player.R;
 import com.example.player.basic.backend.Constant;
 import com.example.player.basic.backend.Lock;
 import com.example.player.basic.backend.Param;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.notification.Notifications;
 import com.example.player.basic.sqlite.Model;
 import com.example.player.mvp.main.MainActivity;
@@ -27,14 +28,13 @@ public class PlayerService extends Service {
     private Notifications notifications;
     private Lock lock;
     private Model model;
-    public static final String LOG = "playerService";
     public static boolean statusRunning;
     private boolean reset;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(LOG,"onCreate");
+        Log.d(Config.log().service(),"onCreate");
         model = new Model(getApplicationContext());
         lock = new Lock(getApplicationContext());
         notifications = new Notifications(getApplicationContext());
@@ -42,27 +42,27 @@ public class PlayerService extends Service {
         player = new MediaPlayer();
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         player.setOnErrorListener((mp, what, extra) -> {
-            Log.d(LOG,"onError");
+            Log.d(Config.log().service(),"onError");
             if (MainActivity.activity != null) MainActivity.activity.showMessage("Не удалось загрузить аудио","playService");
             return false;
         });
         player.setOnPreparedListener(mp -> {
-            Log.d(LOG,"onPrepared");
-            if (MainActivity.activity != null && MainActivity.screen.equals(Constant.SCREEN_MATERIAL)) MainActivity.activity.getMaterialFragment().play(player.getAudioSessionId());
+            Log.d(Config.log().service(),"onPrepared");
+            if (MainActivity.activity != null && Constant.screen.equals(Config.screen().material())) MainActivity.activity.getMaterialFragment().play(player.getAudioSessionId());
             if (reset) player.seekTo(0);
             player.start();
         });
         player.setOnCompletionListener(mp -> {
-            Log.d(LOG,"onCompletion");
+            Log.d(Config.log().service(),"onCompletion");
             stopSelf();
         });
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(LOG,"onStartCommand: id = "+startId+"; intent: "+intent);
+        Log.d(Config.log().service(),"onStartCommand: id = "+startId+"; intent: "+intent);
         statusRunning = true;
-        Cursor cursor = model.get(Constant.TABLE_MEDIA,"name,description,url","id = "+param.getInt(Constant.PARAM_TRACK));
+        Cursor cursor = model.get(Config.table().media(),"name,description,url","id = "+param.getInt(Config.param().track()));
         if (cursor.moveToFirst()) {
             String name = cursor.getString(cursor.getColumnIndex("name"));
             String desc = cursor.getString(cursor.getColumnIndex("description"));
@@ -86,11 +86,11 @@ public class PlayerService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(LOG,"onDestroy");
+        Log.d(Config.log().service(),"onDestroy");
         statusRunning = false;
         notifications.cancel();
         lock.destroy();
-        if (MainActivity.activity != null && MainActivity.screen.equals(Constant.SCREEN_MATERIAL)) MainActivity.activity.getMaterialFragment().stop();
+        if (MainActivity.activity != null && Constant.screen.equals(Config.screen().material())) MainActivity.activity.getMaterialFragment().stop();
         if (player != null) {
             player.stop();
             player.release();
@@ -106,7 +106,7 @@ public class PlayerService extends Service {
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        Log.d(LOG,"onTaskRemoved");
+        Log.d(Config.log().service(),"onTaskRemoved");
         sendBroadcast(new Intent("restart.service"));
         super.onTaskRemoved(rootIntent);
     }

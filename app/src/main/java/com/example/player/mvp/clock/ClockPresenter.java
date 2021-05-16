@@ -45,7 +45,7 @@ public class ClockPresenter implements ClockContract.Presenter {
 
     @Override
     public void showDeleteDialog(int id,int position) {
-        dialog.delete(new Dialog.Delete() {
+        dialog.delete("Удалить напоминание","Вы уверены что хотите удалить напоминание",new Dialog.Delete() {
             @Override
             public void yes() {
                 model.delete(id);

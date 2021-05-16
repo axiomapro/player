@@ -30,6 +30,9 @@ import com.example.player.basic.backend.Constant;
 import com.example.player.basic.backend.Dialog;
 import com.example.player.basic.backend.Param;
 import com.example.player.basic.backend.Permission;
+import com.example.player.basic.backend.Rview;
+import com.example.player.basic.config.Config;
+import com.example.player.basic.list.Item;
 import com.example.player.basic.list.RecyclerViewAdapter;
 import com.example.player.mvp.audio.AudioFragment;
 import com.example.player.mvp.clock.ClockFragment;
@@ -44,7 +47,9 @@ import com.google.android.material.snackbar.Snackbar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, MainContract.View, ClockFragment.useActivity , OwnFragment.useActivity {
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, MainContract.View {
 
     private MainContract.Presenter presenter;
     public static MainActivity activity;
@@ -56,13 +61,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private Param param;
     private FragmentManager manager;
     private MenuItem itemAdd, itemSorting, itemReset;
-    private RecyclerViewAdapter adapter;
-    private RecyclerView recyclerViewSorting;
-    public static final String LOG = "playerLog";
-    public static String screen = Constant.SCREEN_AUDIO;
-    private String textAbout, textEmail, textShareLink, textRateLink, textOther, textBonus;
-    public static int country = 1;
-    public static int visual, nativeAdCnt;
+    private Rview rviewMenu, rviewSorting;
     private boolean isVisibleSorting;
     private int sortingActivePosition;
 
@@ -89,57 +88,58 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private void initClasses() {
         activity = MainActivity.this;
         param = new Param(this);
-        country = param.getInt(Constant.PARAM_COUNTRY);
+        Constant.country = param.getInt(Config.param().country());
         presenter = new MainPresenter(this);
         manager = getSupportFragmentManager();
         drawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.navigation_view_open,R.string.navigation_view_close);
     }
 
     private void initRecyclerViewMenu() {
-        RecyclerView recyclerView = findViewById(R.id.recyclerViewMenu);
-        adapter = new RecyclerViewAdapter("menu",presenter.getListMenu());
-        adapter.setClickListener(new RecyclerViewAdapter.RecyclerViewItem() {
+        rviewMenu = new Rview();
+        rviewMenu.setList(presenter.getListMenu());
+        rviewMenu.setRecyclerView(findViewById(R.id.recyclerViewMenu));
+        rviewMenu.init(Config.recyclerView().menu(), new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {
                 String title = presenter.getListMenu().get(position).getName();
                 itemSorting.setVisible(false);
-                if (title.equals(Constant.SCREEN_AUDIO) || title.equals(Constant.SCREEN_FAVOURITE) || title.equals(Constant.SCREEN_CLOCK) || title.equals(Constant.SCREEN_OWN)) {
+                if (title.equals(Config.screen().audio()) || title.equals(Config.screen().favourite()) || title.equals(Config.screen().clock()) || title.equals(Config.screen().own())) {
                     transition(title);
                 }
                 else if (title.equals("Add clock")) {
-                    screen = Constant.SCREEN_CLOCK;
-                    ClockFragment fragment = (ClockFragment) manager.findFragmentByTag(Constant.SCREEN_CLOCK);
+                    Constant.screen = Config.screen().clock();
+                    ClockFragment fragment = (ClockFragment) manager.findFragmentByTag(Config.screen().clock());
                     if (fragment != null) fragment.add();
-                    else manager.beginTransaction().replace(R.id.container,ClockFragment.newInstance(true),Constant.SCREEN_CLOCK).commit();
+                    else manager.beginTransaction().replace(R.id.container,ClockFragment.newInstance(true),Config.screen().clock()).commit();
                     itemAdd.setVisible(true);
                 }
                 else if (title.equals("Add own")) {
-                    screen = Constant.SCREEN_OWN;
-                    OwnFragment fragment = (OwnFragment) manager.findFragmentByTag(Constant.SCREEN_OWN);
+                    Constant.screen = Config.screen().own();
+                    OwnFragment fragment = (OwnFragment) manager.findFragmentByTag(Config.screen().own());
                     if (fragment != null) fragment.add();
-                    else manager.beginTransaction().replace(R.id.container,OwnFragment.newInstance(true),Constant.SCREEN_OWN).commit();
+                    else manager.beginTransaction().replace(R.id.container,OwnFragment.newInstance(true),Config.screen().own()).commit();
                     itemAdd.setVisible(true);
                 }
                 else if (title.equals("Change")) {
-                    param.setInt(Constant.PARAM_COUNTRY,0);
-                    param.setInt(Constant.PARAM_SORTING,0);
+                    param.setInt(Config.param().country(),0);
+                    param.setInt(Config.param().sorting(),0);
                     startActivity(new Intent(getApplicationContext(), CountryActivity.class));
                     finish();
                 }
                 else if (title.equals("About")) {
-                    presenter.showAboutDialog((textAbout == null || textAbout.equals(""))?"This is default ABOUT text":textAbout,textEmail);
+                    presenter.showAboutDialog((Constant.textAbout == null || Constant.textAbout.equals(""))?"This is default ABOUT text":Constant.textAbout,Constant.textEmail);
                 }
                 else if (title.equals("Share")) {
-                    presenter.share("Поделиться приложением",textShareLink);
+                    presenter.share("Поделиться приложением",Constant.textShareLink);
                 }
                 else if (title.equals("Rate")) {
-                    presenter.browser(textRateLink.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
+                    presenter.browser(Constant.textRateLink.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
                 }
                 else if (title.equals("Other apps")) {
-                    presenter.browser(textOther.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
+                    presenter.browser(Constant.textOther.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
                 }
                 else if (title.equals("Bonus apps")) {
-                    presenter.browser(textBonus.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
+                    presenter.browser(Constant.textBonus.replace("https://play.google.com/store/apps/","market://"),"Отсутствует Google play");
                 }
                 drawerLayout.closeDrawers();
             }
@@ -154,21 +154,20 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
             }
         });
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
     }
 
     private void initRecyclerViewSorting() {
-        recyclerViewSorting = findViewById(R.id.recyclerViewSorting);
-        RecyclerViewAdapter adapterSorting = new RecyclerViewAdapter("menu",presenter.getListSorting());
-        adapterSorting.setClickListener(new RecyclerViewAdapter.RecyclerViewItem() {
+        rviewSorting = new Rview();
+        rviewSorting.setList(presenter.getListSorting());
+        rviewSorting.setRecyclerView(findViewById(R.id.recyclerViewSorting));
+        rviewSorting.init(Config.recyclerView().menu(), new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {
                 drawerLayout.closeDrawers();
-                ((AudioFragment) manager.findFragmentByTag(Constant.SCREEN_AUDIO)).sorting(adapterSorting.getItem(position).getId());
-                adapterSorting.getItem(sortingActivePosition).setActive(false);
-                adapterSorting.getItem(position).setActive(true);
-                adapterSorting.notifyDataSetChanged();
+                ((AudioFragment) manager.findFragmentByTag(Config.screen().audio())).sorting(rviewSorting.getItem(position).getId());
+                rviewSorting.getItem(sortingActivePosition).setActive(false);
+                rviewSorting.getItem(position).setActive(true);
+                rviewSorting.update();
                 sortingActivePosition = position;
             }
 
@@ -182,19 +181,17 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
             }
         });
-        recyclerViewSorting.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewSorting.setAdapter(adapterSorting);
     }
 
     public MaterialFragment getMaterialFragment() {
         MaterialFragment fragment = null;
-        if (screen.equals(Constant.SCREEN_MATERIAL)) fragment = (MaterialFragment) manager.findFragmentByTag(screen);
+        if (Constant.screen.equals(Config.screen().material())) fragment = (MaterialFragment) manager.findFragmentByTag(Constant.screen);
         return fragment;
     }
 
     private void setListener() {
         drawerLayout.addDrawerListener(drawerToggle);
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,recyclerViewSorting);
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,findViewById(R.id.recyclerViewSorting));
         drawerToggle.syncState();
         bottomNavigation.setOnNavigationItemSelectedListener(navigationListener);
         bottomNavigation.setSelectedItemId(R.id.item_audio);
@@ -203,95 +200,30 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
     @Override
     public void initAudioFragment() {
-        manager.beginTransaction().replace(R.id.container,new AudioFragment(),Constant.SCREEN_AUDIO).commit();
+        manager.beginTransaction().replace(R.id.container,new AudioFragment(),Config.screen().audio()).commit();
     }
 
     @Override
     public void parseConfig(String config) {
-        Log.d(MainActivity.LOG,"Config: \n"+config);
-
-        try {
-            JSONObject json = new JSONObject(config);
-            JSONObject jsonObject = json.getJSONObject("Config");
-            boolean isClockTabVisible = jsonObject.getBoolean("is_clock_tab_visible");
-            boolean isOwnTabVisible = jsonObject.getBoolean("is_own_tab_visible");
-            boolean isChangeVisible = jsonObject.getBoolean("is_change_visible");
-            textAbout = jsonObject.getString("text_about");
-            textEmail = jsonObject.getString("text_email");
-            textShareLink = jsonObject.getString("text_sharelink");
-            textRateLink = jsonObject.getString("text_ratelink");
-            textOther = jsonObject.getString("text_other");
-            textBonus = jsonObject.getString("text_bonus");
-            visual = Integer.parseInt(jsonObject.getString("vizual_effect"));
-            nativeAdCnt = Integer.parseInt(jsonObject.getString("native_ad_cnt"));
-            String showMode = jsonObject.getString("show_mode");
-            String appodealAppKey = jsonObject.getString("YOUR_APPODEAL_APP_KEY");
-            String playBanner1 = jsonObject.getString("play-banner1");
-            String playBanner2 = jsonObject.getString("play-banner2");
-            String playBanner3 = jsonObject.getString("play-banner3");
-            String playBanner4 = jsonObject.getString("play-banner4");
-            String mainAd = jsonObject.getString("MainAd");
-            String returnAd = jsonObject.getString("ReturnAd");
-            int returnMinute = jsonObject.getInt("ReturnMinute");
-            String categoryButton = jsonObject.getString("CategoryButton");
-            String clockBadge = jsonObject.getString("ClockBadge");
-            String MainBanner = jsonObject.getString("MainBanner");
-            String MainNative = jsonObject.getString("MainNative");
-            String FavBanner = jsonObject.getString("FavBanner");
-            String FavNative = jsonObject.getString("FavNative");
-            String ClockBanner = jsonObject.getString("ClockBanner");
-            String ClockNative = jsonObject.getString("ClockNative");
-            String OwnBanner = jsonObject.getString("OwnBanner");
-            String OwnNative = jsonObject.getString("OwnNative");
-            String CntryBaner = jsonObject.getString("CntryBaner");
-            String CntryAd = jsonObject.getString("CntryAd");
-
-            int deleted = 0;
-            if (!isClockTabVisible) {
-                bottomNavigation.getMenu().findItem(R.id.item_clock).setVisible(false);
-                adapter.remove(2);
-                adapter.remove(3);
-                adapter.remove(4);
-                deleted = 3;
-            }
-            if (!isOwnTabVisible) {
-                bottomNavigation.getMenu().findItem(R.id.item_own).setVisible(false);
-                if (!isClockTabVisible) {
-                    deleted = 6;
-                    adapter.remove(2);
-                    adapter.remove(3);
-                    adapter.remove(4);
-                } else {
-                    deleted = 3;
-                    adapter.remove(5);
-                    adapter.remove(6);
-                    adapter.remove(7);
-                }
+        Constant.parse(config, new Constant.VisibleItems() {
+            @Override
+            public void hideGroup(int group) {
+                rviewMenu.removeMenuItems(true,null,group);
             }
 
-            if (!isChangeVisible) adapter.getItem(9 - deleted).setVisible(false);
-            if (textShareLink.equals("")) adapter.getItem(11 - deleted).setVisible(false);
-            if (textRateLink.equals("")) adapter.getItem(12 - deleted).setVisible(false);
-            if (textOther.equals("")) adapter.getItem(13 - deleted).setVisible(false);
-            if (textBonus.equals("")) adapter.getItem(14 - deleted).setVisible(false);
-            adapter.notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(LOG,"Ошибка в парсинге config.json");
-        }
+            @Override
+            public void hideItem(String name) {
+                rviewMenu.removeMenuItems(false,name,0);
+            }
+        });
     }
 
     @Override
     public void showMessage(String message,String from) {
         Snackbar snackbar = Snackbar.make(coordinator,message,Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("OK", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (from.equals("receiver")) {
-                    manager.beginTransaction().replace(R.id.container,new AudioFragment(),Constant.SCREEN_AUDIO).commit();
-                }
-                else snackbar.dismiss();
-            }
+        snackbar.setAction("OK", v -> {
+            if (from.equals("receiver")) transition(Config.screen().audio());
+            else snackbar.dismiss();
         });
         snackbar.show();
     }
@@ -315,33 +247,28 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         boolean sorting = false;
         boolean add = false;
         int item = 0;
-        switch (screen) {
-            case Constant.SCREEN_AUDIO:
-                item = R.id.item_audio;
-                tag = getString(R.string.menu_item_audio);
-                if (isVisibleSorting) sorting = true;
-                fragment = new AudioFragment();
-                break;
-            case Constant.SCREEN_FAVOURITE:
-                item = R.id.item_favourite;
-                tag = getString(R.string.menu_item_favourite);
-                fragment = new FavouriteFragment();
-                break;
-            case Constant.SCREEN_CLOCK:
-                item = R.id.item_clock;
-                tag = getString(R.string.menu_item_clock);
-                add = true;
-                fragment = new ClockFragment();
-                break;
-            case Constant.SCREEN_OWN:
-                item = R.id.item_own;
-                tag = getString(R.string.menu_item_own);
-                add = true;
-                fragment = new OwnFragment();
-                break;
+        if (Config.screen().audio().equals(screen)) {
+            item = R.id.item_audio;
+            tag = getString(R.string.menu_item_audio);
+            if (isVisibleSorting) sorting = true;
+            fragment = new AudioFragment();
+        } else if (Config.screen().favourite().equals(screen)) {
+            item = R.id.item_favourite;
+            tag = getString(R.string.menu_item_favourite);
+            fragment = new FavouriteFragment();
+        } else if (Config.screen().clock().equals(screen)) {
+            item = R.id.item_clock;
+            tag = getString(R.string.menu_item_clock);
+            add = true;
+            fragment = new ClockFragment();
+        } else if (Config.screen().own().equals(screen)) {
+            item = R.id.item_own;
+            tag = getString(R.string.menu_item_own);
+            add = true;
+            fragment = new OwnFragment();
         }
 
-        MainActivity.screen = tag;
+        Constant.screen = tag;
         if (itemAdd != null) itemAdd.setVisible(add);
         if (itemSorting != null) itemSorting.setVisible(sorting);
         bottomNavigation.getMenu().findItem(item).setChecked(true);
@@ -381,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                 isVisibleSorting = presenter.isVisibleSortingIcon();
                 if (isVisibleSorting) itemSorting.setVisible(true);
             }
-        },param.getBoolean(Constant.PARAM_CHECK_IMPORT_DB)?100:4000);
+        },param.getBoolean(Config.param().checkImportDb())?100:4000);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -389,11 +316,11 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_add:
-                if (screen.equals(Constant.SCREEN_CLOCK)) ((ClockFragment) manager.findFragmentByTag(screen)).add();
-                if (screen.equals(Constant.SCREEN_OWN)) ((OwnFragment) manager.findFragmentByTag(screen)).add();
+                if (Constant.screen.equals(Config.screen().clock())) ((ClockFragment) manager.findFragmentByTag(Config.screen().clock())).add();
+                if (Constant.screen.equals(Config.screen().own())) ((OwnFragment) manager.findFragmentByTag(Config.screen().own())).add();
                 break;
             case R.id.item_sorting:
-                drawerLayout.openDrawer(recyclerViewSorting);
+                drawerLayout.openDrawer(findViewById(R.id.recyclerViewSorting));
                 break;
             case R.id.item_reset:
                 getMaterialFragment().resetPlayer();
@@ -415,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             itemAdd.setVisible(false);
             itemReset.setVisible(true);
             if (isVisibleSorting) itemSorting.setVisible(false);
-            screen = Constant.SCREEN_MATERIAL;
+            Constant.screen = Config.screen().material();
             drawerToggle.setDrawerIndicatorEnabled(false);
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             bottomNavigation.setVisibility(View.GONE);
@@ -427,10 +354,10 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                 }
             });
         } else {
-            screen = manager.getFragments().get(0).getTag();
+            Constant.screen = manager.getFragments().get(0).getTag();
             itemReset.setVisible(false);
-            if (screen.equals(Constant.SCREEN_OWN) || screen.equals(Constant.SCREEN_CLOCK)) itemAdd.setVisible(true);
-            if (screen.equals(Constant.SCREEN_AUDIO) && isVisibleSorting) itemSorting.setVisible(true);
+            if (Constant.screen.equals(Config.screen().own()) || Constant.screen.equals(Config.screen().clock())) itemAdd.setVisible(true);
+            if (Constant.screen.equals(Config.screen().audio()) && isVisibleSorting) itemSorting.setVisible(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             drawerToggle.setDrawerIndicatorEnabled(true);
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -444,6 +371,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         presenter.exportDatabase();
         presenter.detach();
         activity = null;
-        screen = null;
+        Constant.screen = null;
     }
 }

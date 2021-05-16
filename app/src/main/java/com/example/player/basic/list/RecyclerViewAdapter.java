@@ -1,7 +1,6 @@
 package com.example.player.basic.list;
 
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.player.R;
-import com.example.player.basic.backend.Constant;
-import com.example.player.mvp.main.MainActivity;
+import com.example.player.basic.config.Config;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,8 +19,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     private RecyclerViewItem listener;
     private final List<Item> list;
     private String screen;
-    private int MENU_ITEM = 0;
-    private int MENU_ITEM_SPACE = 1;
+    private final int MENU_ITEM = 0;
+    private final int MENU_ITEM_SPACE = 1;
 
     public interface RecyclerViewItem {
         void onItemClick(int position);
@@ -46,9 +44,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         if (viewType == MENU_ITEM_SPACE) {
             item = R.layout.item_menu_space;
         } else {
-            if (screen.equals(Constant.SCREEN_COUNTRY)) item = R.layout.item_country;
-            else if (screen.equals(Constant.SCREEN_CLOCK)) item = R.layout.item_clock;
-            else if (screen.equals("menu")) item = R.layout.item_menu;
+            if (screen.equals(Config.recyclerView().country())) item = R.layout.item_country;
+            else if (screen.equals(Config.recyclerView().clock())) item = R.layout.item_clock;
+            else if (screen.equals(Config.recyclerView().menu())) item = R.layout.item_menu;
             else item = R.layout.item_audio;
         }
         View v = LayoutInflater.from(parent.getContext()).inflate(item, parent,false);
@@ -63,13 +61,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         } else {
             holder.tvName.setText(item.getName());
 
-            if (screen.equals("dialog-audio") || screen.equals(Constant.SCREEN_AUDIO) || screen.equals(Constant.SCREEN_FAVOURITE) || screen.equals(Constant.SCREEN_OWN)) {
+            if (screen.equals(Config.recyclerView().dialogAudio()) || screen.equals(Config.recyclerView().audio()) || screen.equals(Config.recyclerView().favourite()) || screen.equals(Config.recyclerView().own())) {
                 holder.tvDesc.setText(item.getDesc());
-                if (screen.equals("dialog-audio")) holder.ivFavourite.setVisibility(View.GONE);
+                if (screen.equals(Config.recyclerView().dialogAudio())) holder.ivFavourite.setVisibility(View.GONE);
                 holder.ivIcon.setImageResource(R.drawable.ic_track);
             }
 
-            if (screen.equals(Constant.SCREEN_AUDIO) || screen.equals(Constant.SCREEN_FAVOURITE) || screen.equals(Constant.SCREEN_OWN)) {
+            if (screen.equals(Config.recyclerView().audio()) || screen.equals(Config.recyclerView().favourite()) || screen.equals(Config.recyclerView().own())) {
                 if (item.isFavourite()) holder.ivFavourite.setImageResource(R.drawable.ic_star_active);
                 else holder.ivFavourite.setImageResource(R.drawable.ic_star);
 
@@ -81,14 +79,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
                 });
             }
 
-            if (screen.equals(Constant.SCREEN_CLOCK)) {
+            if (screen.equals(Config.recyclerView().clock())) {
                 holder.tvDate.setText(item.getDate());
                 if (item.isActive()) holder.ivStatus.setImageResource(R.drawable.ic_notice_active);
                 else holder.ivStatus.setImageResource(R.drawable.ic_notice);
             }
 
-            if (screen.equals(Constant.SCREEN_COUNTRY)) {
-                Picasso.get().load(Constant.WEBSITE+"/"+item.getImg()).noPlaceholder().into(holder.ivImg);
+            if (screen.equals(Config.recyclerView().country())) {
+                Picasso.get().load(Config.url().site()+"/"+item.getImg()).noPlaceholder().into(holder.ivImg);
             }
 
             if (screen.equals("menu")) {
@@ -98,26 +96,32 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
                 else holder.tvName.setTextColor(Color.parseColor("#222222"));
             }
 
-            holder.itemView.setOnClickListener(v -> {
-                listener.onItemClick(position);
-            });
+            if (holder.llClick != null) {
+                holder.llClick.setOnClickListener(v -> {
+                    listener.onItemClick(position);
+                });
 
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    listener.onLongClick(position);
-                    return false;
-                }
-            });
+                holder.llClick.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        listener.onLongClick(position);
+                        return false;
+                    }
+                });
+            } else {
+                holder.itemView.setOnClickListener(v -> {
+                    listener.onItemClick(position);
+                });
+
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        listener.onLongClick(position);
+                        return false;
+                    }
+                });
+            }
         }
-    }
-
-    public Item getItem(int position) {
-        return list.get(position);
-    }
-
-    public void remove(int position) {
-        list.remove(position);
     }
 
     @Override

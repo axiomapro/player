@@ -2,7 +2,7 @@ package com.example.player.basic.list;
 
 public class Item {
 
-    private int id,type,icon;
+    private int id,type,icon,group;
     private String name,desc,img,url,link,date;
     private boolean favourite,active,visible;
 
@@ -32,8 +32,9 @@ public class Item {
     }
 
     // Menu
-    public Item(int id,String name,int icon,boolean active,boolean visible) {
+    public Item(int id,int group,String name,int icon,boolean active,boolean visible) {
         this.id = id;
+        this.group = group;
         this.name = name;
         this.icon = icon;
         this.active = active;
@@ -98,6 +99,10 @@ public class Item {
 
     public String getDesc() {
         return desc;
+    }
+
+    public int getGroup() {
+        return group;
     }
 
     public boolean isVisible() {

@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.player.basic.backend.Constant;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.service.PlayerService;
 import com.example.player.R;
 import com.example.player.basic.backend.Param;
@@ -27,9 +28,6 @@ import com.skyfishjy.library.RippleBackground;
 
 public class MaterialFragment extends Fragment implements MaterialContract.View {
 
-    /*
-        - banner ads
-    */
     private MaterialContract.Presenter presenter;
     private RippleBackground rippleBackground;
     private ImageView ivAudio;
@@ -61,11 +59,11 @@ public class MaterialFragment extends Fragment implements MaterialContract.View 
             requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO},1);
         }
 
-        if (id == param.getInt(Constant.PARAM_TRACK)) {
+        if (id == param.getInt(Config.param().track())) {
             if (PlayerService.statusRunning) play(sessionPlayerId);
             else audio();
         } else {
-            param.setInt(Constant.PARAM_TRACK,id);
+            param.setInt(Config.param().track(),id);
             if (PlayerService.statusRunning) {
                 PlayerService.statusRunning = false;
                 getActivity().stopService(new Intent(getActivity(),PlayerService.class));
@@ -93,15 +91,15 @@ public class MaterialFragment extends Fragment implements MaterialContract.View 
 
     public void stop() {
         ivAudio.setImageResource(R.drawable.ic_play_white);
-        if (MainActivity.visual == 1) rippleBackground.stopRippleAnimation();
-        if (MainActivity.visual == 2 && visualizer != null) visualizer.hide();
+        if (Constant.visual == 1) rippleBackground.stopRippleAnimation();
+        if (Constant.visual == 2 && visualizer != null) visualizer.hide();
     }
 
     public void play(int session) {
         sessionPlayerId = session;
         ivAudio.setImageResource(R.drawable.ic_pause_white);
-        if (MainActivity.visual == 1) rippleBackground.startRippleAnimation();
-        if (MainActivity.visual == 2 && session != -1) visualizer.setAudioSessionId(session);
+        if (Constant.visual == 1) rippleBackground.startRippleAnimation();
+        if (Constant.visual == 2 && session != -1) visualizer.setAudioSessionId(session);
     }
 
     @Override

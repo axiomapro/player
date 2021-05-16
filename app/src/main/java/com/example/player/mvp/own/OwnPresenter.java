@@ -34,7 +34,7 @@ public class OwnPresenter implements OwnContract.Presenter {
 
     @Override
     public void showDeleteDialog(int id,int position) {
-        dialog.delete(new Dialog.Delete() {
+        dialog.delete("Удалить аудио","Вы уверены что хотите удалить аудио?",new Dialog.Delete() {
             @Override
             public void yes() {
                 model.delete(id);

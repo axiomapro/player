@@ -2,6 +2,7 @@ package com.example.player.basic.backend;
 
 import android.util.Log;
 
+import com.example.player.basic.config.Config;
 import com.example.player.mvp.main.MainActivity;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +23,7 @@ public class DateTimeManager {
         int year = Integer.parseInt(parseDate[0]);
         int month = Integer.parseInt(parseDate[1]);
         int day = Integer.parseInt(parseDate[2]);
-        Log.d(MainActivity.LOG,"DateTimeManager: "+currentYear+"-"+currentMonth+"-"+currentDay+" vs "+year+"-"+month+"-"+day);
+        Log.d(Config.log().basic(),"DateTimeManager: "+currentYear+"-"+currentMonth+"-"+currentDay+" vs "+year+"-"+month+"-"+day);
 
         int[] months = {31,28,31,30,31,30,31,31,30,31,30,31};
         int resultYear = currentYear - year;

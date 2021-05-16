@@ -12,14 +12,12 @@ import androidx.fragment.app.Fragment;
 import com.example.player.R;
 import com.example.player.basic.backend.Constant;
 import com.example.player.basic.backend.Rview;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.list.RecyclerViewAdapter;
 import com.example.player.mvp.material.MaterialFragment;
 
 public class FavouriteFragment extends Fragment implements FavouriteContract.View {
 
-    /*
-        - native ad
-    */
     private FavouriteContract.Presenter presenter;
     private Rview rView;
 
@@ -31,10 +29,11 @@ public class FavouriteFragment extends Fragment implements FavouriteContract.Vie
         presenter = new FavouritePresenter(this);
         rView = new Rview();
         rView.setList(presenter.getList());
-        rView.init(Constant.SCREEN_FAVOURITE,v, new RecyclerViewAdapter.RecyclerViewItem() {
+        rView.setRecyclerView(v.findViewById(R.id.recyclerView));
+        rView.init(Config.recyclerView().favourite(), new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {
-                getFragmentManager().beginTransaction().replace(R.id.container, MaterialFragment.newInstance(rView.getItem(position).getId(),rView.getItem(position).getName()),Constant.SCREEN_MATERIAL).addToBackStack(Constant.SCREEN_MATERIAL).commit();
+                getFragmentManager().beginTransaction().replace(R.id.container, MaterialFragment.newInstance(rView.getItem(position).getId(),rView.getItem(position).getName()),Config.screen().material()).addToBackStack(Config.screen().material()).commit();
             }
 
             @Override

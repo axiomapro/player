@@ -1,6 +1,5 @@
 package com.example.player.mvp.own;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,25 +11,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.player.R;
-import com.example.player.basic.backend.Constant;
 import com.example.player.basic.backend.Rview;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.list.Item;
 import com.example.player.basic.list.RecyclerViewAdapter;
-import com.example.player.mvp.clock.ClockFragment;
 import com.example.player.mvp.material.MaterialFragment;
 
 public class OwnFragment extends Fragment implements OwnContract.View {
 
-    /*
-        - native ad
-    */
-    private useActivity listener;
     private OwnContract.Presenter presenter;
     private Rview rView;
-
-    public interface useActivity {
-        void showMessage(String message,String from);
-    }
 
     public static OwnFragment newInstance(boolean clickMenu) {
         OwnFragment fragment = new OwnFragment();
@@ -48,10 +38,11 @@ public class OwnFragment extends Fragment implements OwnContract.View {
         presenter = new OwnPresenter(this);
         rView = new Rview();
         rView.setList(presenter.getList());
-        rView.init(Constant.SCREEN_OWN,v, new RecyclerViewAdapter.RecyclerViewItem() {
+        rView.setRecyclerView(v.findViewById(R.id.recyclerView));
+        rView.init(Config.recyclerView().own(), new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {
-                getFragmentManager().beginTransaction().replace(R.id.container, MaterialFragment.newInstance(rView.getItem(position).getId(),rView.getItem(position).getName()),Constant.SCREEN_MATERIAL).addToBackStack(Constant.SCREEN_MATERIAL).commit();
+                getFragmentManager().beginTransaction().replace(R.id.container, MaterialFragment.newInstance(rView.getItem(position).getId(),rView.getItem(position).getName()),Config.screen().material()).addToBackStack(Config.screen().material()).commit();
             }
 
             @Override
@@ -76,7 +67,6 @@ public class OwnFragment extends Fragment implements OwnContract.View {
     @Override
     public void showMessage(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        // listener.showMessage(message);
     }
 
     @Override
@@ -95,15 +85,8 @@ public class OwnFragment extends Fragment implements OwnContract.View {
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof useActivity) listener = (useActivity) context;
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
-        listener = null;
         presenter.detach();
     }
 }

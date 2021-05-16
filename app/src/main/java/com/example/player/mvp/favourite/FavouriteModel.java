@@ -25,7 +25,7 @@ public class FavouriteModel extends Model {
 
     public List<Item> getList() {
         List<Item> list = new ArrayList<>();
-        Cursor cursor = getWithArgs(Constant.TABLE_MEDIA,"id,type,name,description,url","country = ? and type = 1 and favourite is not null and del = 0",new String[]{String.valueOf(MainActivity.country)});
+        Cursor cursor = getWithArgs(table,"id,type,name,description,url","country = ? and type = 1 and favourite is not null and del = 0",new String[]{String.valueOf(Constant.country)});
         while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("id"));
             int type = cursor.getInt(cursor.getColumnIndex("type"));
@@ -39,12 +39,12 @@ public class FavouriteModel extends Model {
     }
 
     public void delete(int id) {
-        updateById(Constant.TABLE_MEDIA,cv.delete(),id);
+        updateById(table,cv.delete(),id);
     }
 
     public boolean toggleFavourite(int id) {
         boolean status = false;
-        Cursor cursor = getWithArgs(Constant.TABLE_MEDIA,"favourite","id = ? and del = 0",new String[]{String.valueOf(id)});
+        Cursor cursor = getWithArgs(table,"favourite","id = ? and del = 0",new String[]{String.valueOf(id)});
         if (cursor.moveToFirst()) {
             String favourite = cursor.getString(cursor.getColumnIndex("favourite"));
             if (favourite != null) favourite = null;
@@ -55,7 +55,7 @@ public class FavouriteModel extends Model {
                 favourite = formatter.format(date);
             }
 
-            updateById(Constant.TABLE_MEDIA,cv.favourite(favourite),id);
+            updateById(table,cv.favourite(favourite),id);
         }
         cursor.close();
         return status;
