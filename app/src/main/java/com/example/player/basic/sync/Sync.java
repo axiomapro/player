@@ -3,7 +3,7 @@ package com.example.player.basic.sync;
 import android.content.Context;
 import android.database.Cursor;
 
-import com.example.player.basic.Constant;
+import com.example.player.basic.backend.Constant;
 import com.example.player.basic.sqlite.CV;
 import com.example.player.basic.sqlite.Model;
 
@@ -21,14 +21,15 @@ public class Sync extends Model {
     }
 
     private void media(JSONObject column) throws JSONException {
-        // server: id, country, type, cat, name, url, date, del
-        // mobile: id, server, uid, country, type, cat, name, url, date, favourite, del
+        // server: id, country, type, cat, name, description, url, date, del
+        // mobile: id, server, uid, country, type, cat, name, description, url, date, favourite, del
         int server = column.getInt("id");
         int country = column.getInt("country");
         int type = column.getInt("type");
         int cat = column.getInt("cat");
         int del = column.getInt("del");
         String name = column.getString("name");
+        String description = column.getString("description");
         String url = column.getString("url");
         String date = column.getString("date");
 
@@ -38,11 +39,11 @@ public class Sync extends Model {
             String dateMedia = cursor.getString(cursor.getColumnIndex("date"));
             if (del == 0) {
                 if (!dateMedia.equals(date)) favouriteMedia = 0;
-                updateByServer(Constant.TABLE_MEDIA,cv.editMedia(country,type,cat,name,url,date,favouriteMedia),server);
+                updateByServer(Constant.TABLE_MEDIA,cv.editMedia(country,type,cat,name,description,url,date,favouriteMedia),server);
             }
             else updateByServer(Constant.TABLE_MEDIA,cv.delete(),server);
         }
-        else if (del == 0) insertAndReplace(Constant.TABLE_MEDIA,cv.addMedia(server,0, country, type, cat, name, url, date, del));
+        else if (del == 0) insertAndReplace(Constant.TABLE_MEDIA,cv.addMedia(server,0, country, type, cat, name, description, url, date, del));
         cursor.close();
     }
 

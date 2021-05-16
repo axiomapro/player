@@ -4,17 +4,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.widget.Toast;
 
-import com.example.player.basic.Alarm;
-import com.example.player.basic.Constant;
+import com.example.player.basic.backend.Alarm;
+import com.example.player.basic.backend.Constant;
 import com.example.player.basic.sqlite.CV;
 import com.example.player.basic.sqlite.Model;
 
 public class MyBroadcastReceiver extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
+        String action = intent.getAction();
+        if (action.equals("android.intent.action.BOOT_COMPLETED")) {
             Model model = new Model(context);
             CV cv = new CV();
             Alarm alarm = new Alarm(context);

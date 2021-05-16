@@ -55,7 +55,7 @@ public class CV {
         return cv;
     }
 
-    public ContentValues addMedia(int server, int uid, int country, int type, int cat, String name, String url, String date, int del) {
+    public ContentValues addMedia(int server, int uid, int country, int type, int cat, String name, String description, String url, String date, int del) {
         cv.clear();
         cv.put("server",server);
         cv.put("uid",uid);
@@ -63,6 +63,7 @@ public class CV {
         cv.put("type",type);
         cv.put("cat",cat);
         cv.put("name",name);
+        cv.put("description",description);
         cv.put("url",url);
         cv.put("date",date);
         cv.put("favourite",(String) null);
@@ -70,12 +71,13 @@ public class CV {
         return cv;
     }
 
-    public ContentValues editMedia(int country, int type, int cat, String name, String url, String date, int favourite) {
+    public ContentValues editMedia(int country, int type, int cat, String name, String description, String url, String date, int favourite) {
         cv.clear();
         cv.put("country",country);
         cv.put("type",type);
         cv.put("cat",cat);
         cv.put("name",name);
+        cv.put("description",description);
         cv.put("url",url);
         cv.put("date",date);
         cv.put("favourite",favourite);

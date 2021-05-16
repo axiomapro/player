@@ -1,114 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <TextView
+        android:id="@+id/textViewTitle"
+        android:padding="15dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:text="Выберите трек"
+        android:background="@color/purple_500"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <DatePicker
+        android:id="@+id/datePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TimePicker
+        android:id="@+id/timePicker"
+        android:visibility="gone"
+        android:layout_marginBottom="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"/>
+
+    <androidx.gridlayout.widget.GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.gridlayout.widget.GridLayout
-            android:background="@color/purple_500"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonCancel"
+            android:text="Cancel"
+            android:textColor="#fff"
+            android:stateListAnimator="@null"
+            android:background="@drawable/ripple_button_red"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_columnWeight="1" />
 
-            <TextView
-                android:id="@+id/textViewDate"
-                android:text="Дата"
-                android:textSize="17sp"
-                android:textColor="#fff"
-                android:gravity="center"
-                android:padding="15dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_columnWeight="1" />
+    </androidx.gridlayout.widget.GridLayout>
 
-            <TextView
-                android:id="@+id/textViewTime"
-                android:text="Время"
-                android:textSize="17sp"
-                android:textColor="#fff"
-                android:gravity="center"
-                android:padding="15dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_columnWeight="1" />
-
-        </androidx.gridlayout.widget.GridLayout>
-
-        <DatePicker
-            android:id="@+id/datePicker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <TimePicker
-            android:id="@+id/timePicker"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:hint="Название уведомления"
-                android:layout_margin="10dp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:background="#fff"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/textViewAudioName"
-            android:text="Не выбран трек"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:nestedScrollingEnabled="false"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <androidx.gridlayout.widget.GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/buttonCancel"
-                android:text="Cancel"
-                android:textColor="#fff"
-                android:background="@color/purple_700"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_columnWeight="1" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/buttonOk"
-                android:text="Ok"
-                android:textColor="#fff"
-                android:background="@color/purple_500"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_columnWeight="1" />
-
-        </androidx.gridlayout.widget.GridLayout>
-
-    </LinearLayout>
-
-</androidx.core.widget.NestedScrollView>
+</LinearLayout>

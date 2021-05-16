@@ -30,8 +30,8 @@
             <TextView
                 android:id="@+id/itemDate"
                 android:text="18 апр"
-                android:textSize="15sp"
-                android:layout_marginTop="3dp"
+                android:textSize="14sp"
+                android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

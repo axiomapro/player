@@ -7,8 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.player.mvp.view.MainActivity;
-import com.example.player.basic.Constant;
+import com.example.player.mvp.main.MainActivity;
+import com.example.player.basic.backend.Constant;
 
 import java.util.Map;
 
@@ -27,7 +27,6 @@ public class MyRequest {
 
     public void sendRequest(final String from, final Map<String, String> params, VolleyRequest listener) {
         final String url = Constant.JSON+"/"+from;
-        Log.d(MainActivity.LOG,"url: "+url);
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {

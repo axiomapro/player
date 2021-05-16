@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table `country`(id integer primary key autoincrement, server integer, name text, link text, img text, categories text, updated text, del integer);");
         db.execSQL("create table `category`(id integer primary key autoincrement, server integer, name text, sort integer, del integer);");
-        db.execSQL("create table `media`(id integer primary key autoincrement, server integer, uid integer, country integer, type integer, cat integer, name text, url text, date text, favourite text, del integer);");
+        db.execSQL("create table `media`(id integer primary key autoincrement, server integer, uid integer, country integer, type integer, cat integer, name text, description text, url text, date text, favourite text, del integer);");
         db.execSQL("create table `clock`(id integer primary key autoincrement, name text, media integer, date text, status integer, del integer);");
     }
 

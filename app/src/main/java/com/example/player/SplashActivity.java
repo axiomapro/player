@@ -7,10 +7,10 @@ import android.os.Handler;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.player.basic.Constant;
-import com.example.player.basic.Param;
-import com.example.player.mvp.view.CountryActivity;
-import com.example.player.mvp.view.MainActivity;
+import com.example.player.basic.backend.Constant;
+import com.example.player.basic.backend.Param;
+import com.example.player.mvp.country.CountryActivity;
+import com.example.player.mvp.main.MainActivity;
 
 public class SplashActivity extends AppCompatActivity {
 

@@ -3,6 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/item_sorting"
+        android:visible="false"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_option_sorting"
+        android:title=""/>
+
+    <item
+        android:id="@+id/item_reset"
+        android:visible="false"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_option_reset"
+        android:title=""/>
+
+    <item
         android:id="@+id/item_add"
         android:visible="false"
         app:showAsAction="always"

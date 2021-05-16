@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/ripple_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.gridlayout.widget.GridLayout
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/itemIcon"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_menu_bonus_apps"
+            android:layout_width="25dp"
+            android:layout_height="25dp"/>
+
+        <TextView
+            android:id="@+id/itemName"
+            android:textSize="14sp"
+            android:textColor="#222"
+            android:textStyle="bold"
+            android:text="Ok"
+            app:layout_gravity="center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </androidx.gridlayout.widget.GridLayout>
+
+</LinearLayout>
