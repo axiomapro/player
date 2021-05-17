@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.example.player.basic.backend.Constant;
+import com.example.player.basic.config.Config;
 import com.example.player.basic.list.Item;
 import com.example.player.basic.sqlite.CV;
 import com.example.player.basic.sqlite.Model;
@@ -17,6 +18,7 @@ import java.util.List;
 public class OwnModel extends Model {
 
     private final CV cv;
+    private final String table = Config.table().media();
 
     public interface Model {
         void onSuccess(int id);

@@ -40,7 +40,7 @@ public class AudioFragment extends Fragment implements AudioContract.View, Recyc
         param.setInt(Config.param().sorting(),cat);
         rView.clear();
         rView.setList(presenter.getList(cat));
-        rView.refresh(Config.screen().audio(),this);
+        rView.refresh(Config.recyclerView().audio(),this);
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.util.List;
 public class AudioModel extends Model {
 
     private final CV cv;
+    private final String table = Config.table().media();
 
     public AudioModel(Context context) {
         super(context);

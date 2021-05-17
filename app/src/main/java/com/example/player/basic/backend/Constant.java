@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class Constant {
 
-    public static String screen = Config.screen().audio();
+    public static String screen;
     public static String textAbout;
     public static String textEmail;
     public static String textShareLink;
@@ -86,7 +86,6 @@ public class Constant {
 
             if (!isClockTabVisible) listener.hideGroup(1);
             if (!isOwnTabVisible) listener.hideGroup(2);
-
             if (!isChangeVisible) listener.hideGroup(3);
             if (textShareLink.equals("")) listener.hideItem("Share");
             if (textRateLink.equals("")) listener.hideItem("Rate");

@@ -61,9 +61,19 @@ public class Rview {
     }
 
     public void removeMenuItems(boolean removeByGroup,String name,int group) {
+        int position = 0;
         for (int i = 0; i < list.size(); i++) {
-            if (removeByGroup && list.get(i).getGroup() == group) list.remove(i);
-            if (!removeByGroup && list.get(i).equals(name)) list.remove(i);
+            if (removeByGroup) {
+                if (list.get(position).getGroup() == group && group != 0) {
+                    list.remove(position);
+                    position--;
+                } else position++;
+            } else {
+                if (list.get(position).getName().equals(name)) {
+                    list.remove(position);
+                    position--;
+                } else position++;
+            }
         }
         adapter.notifyDataSetChanged();
     }

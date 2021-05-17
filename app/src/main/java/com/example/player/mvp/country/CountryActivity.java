@@ -44,7 +44,7 @@ public class CountryActivity extends AppCompatActivity implements CountryContrac
     @Override
     public void initRecyclerView(List<Item> list) {
         recyclerView = findViewById(R.id.recyclerView);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Config.screen().country(),list);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(Config.recyclerView().country(),list);
         adapter.setClickListener(new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {

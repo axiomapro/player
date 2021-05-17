@@ -1,10 +1,5 @@
 package com.example.player.basic.backend;
 
-import android.util.Log;
-
-import com.example.player.basic.config.Config;
-import com.example.player.mvp.main.MainActivity;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -23,7 +18,6 @@ public class DateTimeManager {
         int year = Integer.parseInt(parseDate[0]);
         int month = Integer.parseInt(parseDate[1]);
         int day = Integer.parseInt(parseDate[2]);
-        Log.d(Config.log().basic(),"DateTimeManager: "+currentYear+"-"+currentMonth+"-"+currentDay+" vs "+year+"-"+month+"-"+day);
 
         int[] months = {31,28,31,30,31,30,31,31,30,31,30,31};
         int resultYear = currentYear - year;
@@ -37,8 +31,7 @@ public class DateTimeManager {
             resultMonth--;
             resultDay = months[currentMonth - 1] + resultDay;
         }
-        int result = (365 * resultYear) + (resultMonth * 30) + resultDay;
-        return result;
+        return (365 * resultYear) + (resultMonth * 30) + resultDay;
     }
 
     public boolean time(String time) {
@@ -60,7 +53,6 @@ public class DateTimeManager {
     }
 
     public String restoreDateTime(String datetime) {
-        String result = datetime;
         String[] side = datetime.split(" ");
         String date = side[0];
         String[] cutDate = date.split("-");
@@ -71,8 +63,7 @@ public class DateTimeManager {
         String[] cutTime = time.split(":");
         String hour = addZero(cutTime[0]);
         String minute = addZero(cutTime[1]);
-        result = year+"-"+month+"-"+day+" "+hour+":"+minute+":00";
-        return result;
+        return year+"-"+month+"-"+day+" "+hour+":"+minute+":00";
     }
 
     public String getRuDate(String datetime) {

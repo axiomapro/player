@@ -8,12 +8,10 @@ public class Model {
 
     protected DatabaseHelper databaseHelper;
     protected Parameter parameter;
-    protected String table;
 
     public Model(Context context) {
         databaseHelper = DatabaseHelper.getInstance(context);
         parameter = new Parameter();
-        table = parameter.getTableByScreen();
     }
 
     public int insertAndReplace(String table, ContentValues cv) {

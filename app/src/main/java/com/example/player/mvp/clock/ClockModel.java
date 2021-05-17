@@ -16,6 +16,7 @@ import java.util.List;
 public class ClockModel extends Model {
 
     private final CV cv;
+    private final String table = Config.table().clock();
 
     public interface Model {
         void onSuccess(int id);

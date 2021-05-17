@@ -40,7 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        int item = 0;
+        int item;
         if (viewType == MENU_ITEM_SPACE) {
             item = R.layout.item_menu_space;
         } else {

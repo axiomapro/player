@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private FragmentManager manager;
     private MenuItem itemAdd, itemSorting, itemReset;
     private Rview rviewMenu, rviewSorting;
+    private RecyclerView recyclerViewMenu, recyclerViewSorting;
     private boolean isVisibleSorting;
     private int sortingActivePosition;
 
@@ -83,9 +85,12 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         drawerLayout = findViewById(R.id.drawerLayout);
         bottomNavigation = findViewById(R.id.bottomNavigationView);
         coordinator = findViewById(R.id.coordinator);
+        recyclerViewMenu = findViewById(R.id.recyclerViewMenu);
+        recyclerViewSorting = findViewById(R.id.recyclerViewSorting);
     }
 
     private void initClasses() {
+        Constant.screen = Config.screen().audio();
         activity = MainActivity.this;
         param = new Param(this);
         Constant.country = param.getInt(Config.param().country());
@@ -97,11 +102,11 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private void initRecyclerViewMenu() {
         rviewMenu = new Rview();
         rviewMenu.setList(presenter.getListMenu());
-        rviewMenu.setRecyclerView(findViewById(R.id.recyclerViewMenu));
+        rviewMenu.setRecyclerView(recyclerViewMenu);
         rviewMenu.init(Config.recyclerView().menu(), new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {
-                String title = presenter.getListMenu().get(position).getName();
+                String title = rviewMenu.getItem(position).getName();
                 itemSorting.setVisible(false);
                 if (title.equals(Config.screen().audio()) || title.equals(Config.screen().favourite()) || title.equals(Config.screen().clock()) || title.equals(Config.screen().own())) {
                     transition(title);
@@ -159,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     private void initRecyclerViewSorting() {
         rviewSorting = new Rview();
         rviewSorting.setList(presenter.getListSorting());
-        rviewSorting.setRecyclerView(findViewById(R.id.recyclerViewSorting));
+        rviewSorting.setRecyclerView(recyclerViewSorting);
         rviewSorting.init(Config.recyclerView().menu(), new RecyclerViewAdapter.RecyclerViewItem() {
             @Override
             public void onItemClick(int position) {
@@ -194,8 +199,13 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED,findViewById(R.id.recyclerViewSorting));
         drawerToggle.syncState();
         bottomNavigation.setOnNavigationItemSelectedListener(navigationListener);
-        bottomNavigation.setSelectedItemId(R.id.item_audio);
+        bottomNavigation.getMenu().findItem(R.id.item_audio).setChecked(true);
         manager.addOnBackStackChangedListener(this);
+
+        toolbar.setNavigationOnClickListener(v -> {
+            if (Constant.screen.equals(Config.screen().material())) manager.popBackStack();
+            else drawerLayout.openDrawer(Gravity.LEFT);
+        });
     }
 
     @Override
@@ -347,12 +357,6 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             bottomNavigation.setVisibility(View.GONE);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    manager.popBackStack();
-                }
-            });
         } else {
             Constant.screen = manager.getFragments().get(0).getTag();
             itemReset.setVisible(false);

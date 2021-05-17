@@ -23,6 +23,7 @@ import static android.content.Context.JOB_SCHEDULER_SERVICE;
 public class CountryModel extends Model {
 
     private final Context context;
+    private final String table = Config.table().country();
 
     public CountryModel(Context context) {
         super(context);
